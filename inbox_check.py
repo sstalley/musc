@@ -15,7 +15,7 @@ _, n_msgs = imap.search(None, "ALL")
 
 
 for n_msg in n_msgs[0].split():
-    _, data = imap.fetch(msgnum, "(RFC822)")
+    _, data = imap.fetch(n_msg, "(RFC822)")
 
     message = email.message_from_bytes(data[0][1])
 
