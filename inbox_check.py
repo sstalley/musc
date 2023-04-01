@@ -47,8 +47,7 @@ for n_msg in n_msgs[0].split():
         message = email.message_from_bytes(data[0][1])
 
         student_email = message.get('From')
-        #TODO: Check that it's from a school email
-        if False: #
+        if school_suffix.upper() not in student_email.upper():
             raise NotSchoolAddress
 
         subject = message.get('Subject')
