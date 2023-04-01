@@ -1,5 +1,5 @@
 import smtplib
-from account_info import test_email, gmail_smtp, gmail_smtp_port, gmail_email, gmail_password
+from account_info import gmail_smtp, gmail_smtp_port, gmail_email, gmail_password
 from email.mime.text import MIMEText
 
 # MIME stuff adapted from:
@@ -29,5 +29,3 @@ def send_result(to_email, assignment, score, max_score, feedback):
     smtp_server.login(gmail_email, gmail_password)
     smtp_server.sendmail(gmail_email, recipients, msg.as_string())
     smtp_server.quit()
-
-send_result(test_email, "TEST", 4, 3, "Good Work!")
