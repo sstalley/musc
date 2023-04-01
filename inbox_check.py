@@ -9,9 +9,9 @@ from account_info import imap_server, imap_email, imap_password
 imap = imaplib.IMAP4_SSL(imap_server)
 imap.login(imap_email, imap_password)
 
-imap.select("Inbox")
+imap.select(readonly=False)
 
-_, n_msgs = imap.search(None, "ALL")
+_, n_msgs = imap.search(None, "(UNSEEN)")
 
 
 for n_msg in n_msgs[0].split():
@@ -19,6 +19,10 @@ for n_msg in n_msgs[0].split():
 
     message = email.message_from_bytes(data[0][1])
 
-    print(f"Message # {n_msg}")
     print(f"From: {message.get('From')}")
     print(f"Subject: {message.get('Subject')}")
+
+    _, data = imap.store(n_msg,'+FLAGS','\Seen')
+
+
+imap.close()
