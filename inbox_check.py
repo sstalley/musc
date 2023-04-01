@@ -1,13 +1,13 @@
 import imaplib
 import email
-from account_info import imap_server, imap_email, imap_password
+from account_info import gmail_imap, gmail_email, gmail_password
 
 # Credit to NeuralNine for putting together a great tutorial
 # Email checking stuff adapted from:
 # https://www.youtube.com/watch?v=4iMZUhkpWAc
 
-imap = imaplib.IMAP4_SSL(imap_server)
-imap.login(imap_email, imap_password)
+imap = imaplib.IMAP4_SSL(gmail_imap)
+imap.login(gmail_email, gmail_password)
 
 imap.select(readonly=False)
 
