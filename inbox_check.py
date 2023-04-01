@@ -1,5 +1,6 @@
 import imaplib
 import email
+import os
 import re
 from account_info import gmail_imap, gmail_email, gmail_password, school_suffix
 from result_sender import send_result
@@ -25,6 +26,35 @@ class NotSchoolAddress(Exception):
 
 def _mark_as_read(n_msg):
     _, _ = imap.store(n_msg,'+FLAGS','\Seen')
+
+
+# This function adapted from:
+# https://gist.github.com/kngeno/5337e543eb72174a6ac95e028b3b6456
+
+
+def download_attachments(message, filetype=".py", file_dir="./test_dir"):
+    for part in message.walk():
+       if part.get_content_maintype() == 'multipart':
+           print("skipping multi-part...")
+           #print(part.as_string())
+           continue
+       if part.get('Content-Disposition') is None:
+           print("skipping no Content-Disposition...")
+           #print(part.as_string())
+           continue
+       fileName = part.get_filename()
+       print('file names processed ...')
+       if bool(fileName):
+           if not fileName.upper().endswith(filetype.upper()):
+               print(f"skipping {fileName} (not a {filetype} file)")
+               continue
+
+           filePath = os.path.join(file_dir, fileName)
+           if not os.path.isfile(filePath):
+               print(f"Downloading {fileName} ...")
+               fp = open(filePath, 'wb')
+               fp.write(part.get_payload(decode=True))
+               fp.close()
 
 
 
@@ -57,6 +87,10 @@ for n_msg in n_msgs[0].split():
 
         assign_n = int(subject[sub_nums.start():sub_nums.end()])
 
+
+        # download attachments to run
+        download_attachments(message, file_dir="./test_dir")
+
         print(f"From: {student_email}")
         print(f"Subject: {subject}")
 
@@ -77,3 +111,4 @@ for n_msg in n_msgs[0].split():
         _mark_as_read(n_msg)
 
 imap.close()
+imap.logout()
