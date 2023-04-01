@@ -14,6 +14,10 @@ no_assignno_str = \
 "Assignment for MUSC 10\n" + \
 "Maybe It will work this time 3"
 
+no_code_str = \
+"I couldn't find any attached source files.\n" + \
+"Please ensure that the source code is attached with the right file extension (ex: work.py)."
+
 
 class NoAssignmentNumber(Exception):
     "Raised when we can't figure out what assignment the email is about"
@@ -22,6 +26,12 @@ class NoAssignmentNumber(Exception):
 class NotSchoolAddress(Exception):
     "Raised when the email isn't from a school address"
     pass
+
+class NoSourceFile(Exception):
+    "Raised when there isn't an attached source file"
+    pass
+
+
 
 
 def _mark_as_read(n_msg):
@@ -33,6 +43,7 @@ def _mark_as_read(n_msg):
 
 
 def download_attachments(message, filetype=".py", file_dir="./test_dir"):
+    written = False
     for part in message.walk():
        if part.get_content_maintype() == 'multipart':
            print("skipping multi-part...")
@@ -50,13 +61,15 @@ def download_attachments(message, filetype=".py", file_dir="./test_dir"):
                continue
 
            filePath = os.path.join(file_dir, fileName)
-           if not os.path.isfile(filePath):
+           if os.path.isfile(filePath):
+               written = True
                print(f"Downloading {fileName} ...")
                fp = open(filePath, 'wb')
                fp.write(part.get_payload(decode=True))
                fp.close()
 
-
+    if not written:
+        raise NoSourceFile
 
 # Credit to NeuralNine for putting together a great tutorial
 # Email checking stuff adapted from:
@@ -98,6 +111,10 @@ for n_msg in n_msgs[0].split():
         send_result(student_email, assign_n, 1, 1, "Great Work!")
 
         _, data = imap.store(n_msg,'+FLAGS','\Seen')
+
+    except NoSourceFile:
+        print(f"No source code!")
+        send_result(student_email, assign_n, 0, 1, no_code_str)
 
     except NoAssignmentNumber:
 
