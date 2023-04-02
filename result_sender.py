@@ -2,10 +2,15 @@ import smtplib
 from account_info import gmail_smtp, gmail_smtp_port, gmail_email, gmail_password
 from email.mime.text import MIMEText
 
+VERSION = 'v0.0.0.0'
+YEAR = 2023
+
+tail_str = f"Mailable Unintelligent Student Grader (MUSC) {VERSION}\n" \
+           f"Copyright {YEAR} Sean O. Stalley\n"\
+            "https://github.com/sstalley/musc"
 
 # MIME stuff adapted from:
 # https://mailtrap.io/blog/python-send-email-gmail/
-
 
 def _write_subject(assignment, score, max_score):
 
@@ -20,7 +25,7 @@ def send_result(to_email, in_reply_to, assignment, score, max_score, feedback):
 
     recipients = [to_email]
     subject = _write_subject(assignment, score, max_score)
-    body = feedback
+    body = feedback + "\n\n\n" + tail_str
     thread_id = None # HACK - will this still work?
 
     msg = MIMEText(body)
