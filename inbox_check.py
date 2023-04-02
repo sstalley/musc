@@ -88,6 +88,7 @@ for n_msg in n_msgs[0].split():
     try:
 
         message = email.message_from_bytes(data[0][1])
+        message_id = message.get('Message-ID')
 
         student_email = message.get('From')
         if school_suffix.upper() not in student_email.upper():
@@ -108,18 +109,18 @@ for n_msg in n_msgs[0].split():
         print(f"Subject: {subject}")
 
         #For testing pass everything that is valid
-        send_result(student_email, assign_n, 1, 1, "Great Work!")
+        send_result(student_email, message_id, assign_n, 1, 1, "Great Work!")
 
         _, data = imap.store(n_msg,'+FLAGS','\Seen')
 
     except NoSourceFile:
         print(f"No source code!")
-        send_result(student_email, assign_n, 0, 1, no_code_str)
+        send_result(student_email, message_id, assign_n, 0, 1, no_code_str)
 
     except NoAssignmentNumber:
 
         print(f"No assignment number!")
-        send_result(student_email, "?", 0, 1, no_assignno_str)
+        send_result(student_email, message_id, "?", 0, 1, no_assignno_str)
         _mark_as_read(n_msg)
 
     except NotSchoolAddress:
