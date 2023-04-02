@@ -2,8 +2,11 @@ import imaplib
 import email
 import os
 import re
+import subprocess
 from account_info import gmail_imap, gmail_email, gmail_password, school_suffix
 from result_sender import send_result
+from runner_grader import run_grade, UnknownAssignment, TooManyFiles
+
 
 
 no_assignno_str = \
@@ -41,9 +44,11 @@ def _mark_as_read(n_msg):
 # This function adapted from:
 # https://gist.github.com/kngeno/5337e543eb72174a6ac95e028b3b6456
 
+def cleanup_directory(filetype=".py", file_dir="./test_dir/"):
+    subprocess.call(["rm",  os.path.join(file_dir, "*" + filetype)])
 
-def download_attachments(message, filetype=".py", file_dir="./test_dir"):
-    written = False
+def download_attachments(message, filetype=".py", file_dir="./test_dir/"):
+    files = []
     for part in message.walk():
        if part.get_content_maintype() == 'multipart':
            print("skipping multi-part...")
@@ -60,16 +65,18 @@ def download_attachments(message, filetype=".py", file_dir="./test_dir"):
                print(f"skipping {fileName} (not a {filetype} file)")
                continue
 
+           print(f'fileName:{fileName}')
            filePath = os.path.join(file_dir, fileName)
-           if os.path.isfile(filePath):
-               written = True
-               print(f"Downloading {fileName} ...")
-               fp = open(filePath, 'wb')
-               fp.write(part.get_payload(decode=True))
-               fp.close()
+           print(f"Downloading {fileName} ...")
+           fp = open(filePath, 'wb')
+           fp.write(part.get_payload(decode=True))
+           fp.close()
+           files.append(filePath)
 
-    if not written:
+    if len(files) < 1:
         raise NoSourceFile
+
+    return files
 
 # Credit to NeuralNine for putting together a great tutorial
 # Email checking stuff adapted from:
@@ -101,15 +108,19 @@ for n_msg in n_msgs[0].split():
 
         assign_n = int(subject[sub_nums.start():sub_nums.end()])
 
-
         # download attachments to run
-        download_attachments(message, file_dir="./test_dir")
+        path_to_source = download_attachments(message, file_dir="./test_dir")
 
-        print(f"From: {student_email}")
-        print(f"Subject: {subject}")
+        # grade the submission
+        score, max_score, feedback = run_grade(assign_n, path_to_source)
+
+        # get rid of the evidence :P
+        cleanup_directory()
 
         #For testing pass everything that is valid
-        send_result(student_email, message_id, assign_n, 1, 1, "Great Work!")
+
+
+        send_result(student_email, message_id, assign_n, score, max_score, feedback)
 
         _, data = imap.store(n_msg,'+FLAGS','\Seen')
 
