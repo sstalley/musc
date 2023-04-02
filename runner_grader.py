@@ -40,7 +40,6 @@ def _run_time(cmd):
 def _grade_py0(source):
 
     score = 1 # one point for getting this far
-    feedback = "Feedback:\nSubmitted valid .py file (+1)"
 
     cmd = ['python', source]
     runtime, stdout, stderr = _run_time(cmd)
@@ -48,6 +47,13 @@ def _grade_py0(source):
     print("Standard Output:", stdout)
     print("Standard Error:", stderr)
 
+    feedback = f"{source} ran in {runtime:.3f} seconds\n\nProgram Output:\n"
+
+    for line in stdout:
+        feedback = feedback + line + "\n"
+
+
+    feedback = feedback + "\nGrading:\nSubmitted valid .py file (+1)"
 
     total = 0
     for i, line in enumerate(stdout):
