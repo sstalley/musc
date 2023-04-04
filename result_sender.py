@@ -16,7 +16,7 @@ def _write_subject(assignment, score, max_score):
 
     subject = f"PY-{assignment} Results: "
     if score >= max_score:
-        subject = subject + '\u2713 '
+        subject = subject + '\u2705 '
 
     return subject + f"{score}/{max_score}"
 

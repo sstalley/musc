@@ -39,21 +39,42 @@ def _run_time(cmd):
 
 def _grade_py0(source):
 
-    score = 1 # one point for getting this far
+    score = 0
 
     cmd = ['python', source]
     runtime, stdout, stderr = _run_time(cmd)
 
+    file = open(source, 'r')
+    flines = file.readlines()
+
+
     print("Standard Output:", stdout)
     print("Standard Error:", stderr)
 
-    feedback = f"{source} ran in {runtime:.3f} seconds\n\nProgram Output:\n"
+    feedback = f"{source} contents:\n"
+    for line in flines:
+        feedback = feedback + line
+
+    feedback = feedback + f"{source} ran in {runtime:.3f} seconds\n\nProgram Output:\n"
 
     for line in stdout:
         feedback = feedback + line + "\n"
 
+    feedback = feedback + "\nError Output:\n"
+    for line in stderr:
+        feedback = feedback + line + "\n"
 
-    feedback = feedback + "\nGrading:\nSubmitted valid .py file (+1)"
+
+    score = score + 1# one point for getting this far
+    feedback = feedback + "\nGrading:\nSubmitted valid .py file (+1)\n"
+
+    if len(flines) <= 1:
+        score = score + 1
+        feedback = feedback + "Extra Credit: One-line bonus (+1)\n"
+
+    if len(stderr) < 1:
+        score = score + 1
+        feedback = feedback + ".py file runs without errors (+1)\n"
 
     total = 0
     for i, line in enumerate(stdout):
@@ -63,7 +84,7 @@ def _grade_py0(source):
                 score = score + 1
                 feedback = feedback + f"\n{line} is a valid email address (+1)"
             else:
-                feedback = feedback + f"\n{line} is a not a valid email address"
+                feedback = feedback + f"\n{line} is a not a valid email address (0)"
 
         elif i == 1:
             digits = re.findall("\d", line)
@@ -85,7 +106,7 @@ def _grade_py0(source):
             else:
                 feedback = feedback + f"\nSum not correct ({int(line)} != {total}) (0)"
 
-    return score, 4, feedback
+    return score, 5, feedback
 
 
 def run_grade(assign_no, path_to_source):
