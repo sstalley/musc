@@ -3,7 +3,7 @@ import threading
 import time
 import re
 
-MAX_RUNTIME = 30
+MAX_RUNTIME = 300
 
 class UnknownAssignment(Exception):
     r"MUSC doesn't know how to grade that assignment yet"
@@ -41,7 +41,7 @@ def _grade_py0(source):
 
     score = 0
 
-    cmd = ['python', source]
+    cmd = ['python', 'sandbox.py', source]
     runtime, stdout, stderr = _run_time(cmd)
 
     file = open(source, 'r')

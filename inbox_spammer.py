@@ -6,6 +6,8 @@ import threading
 #Kinda hacky:
 from runner_grader import _run_time
 
+GRADING_CYCLE_SECONDS = 30
+
 while True:
 
     tstamp = datetime.now().strftime(r"%Y%m%d_%H%M%S")
@@ -24,4 +26,4 @@ while True:
         f.writelines(line + '\n' for line in stderr)
         f.close()
 
-    time.sleep(30)
+    time.sleep(GRADING_CYCLE_SECONDS)
