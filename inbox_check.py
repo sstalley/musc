@@ -7,7 +7,13 @@ from account_info import gmail_imap, gmail_email, gmail_password, school_suffix
 from result_sender import send_result
 from runner_grader import run_grade, UnknownAssignment, TooManyFiles
 
-
+unknown_assign_str = \
+"I don't know how to grade this assignment.\n" + \
+"Please ensure that the assignment number is correct and the only number in the Subject field.\n\n" + \
+"Example Acceptable Subject Lines:\n" + \
+"StudentName PY-0\n" + \
+"Assignment for MUSC 10\n" + \
+"Maybe It will work this time 3"
 
 no_assignno_str = \
 "I cannot determine which assignment this is.\n" + \
@@ -21,6 +27,9 @@ no_code_str = \
 "I couldn't find any attached source files.\n" + \
 "Please ensure that the source code is attached with the right file extension (ex: work.py)."
 
+too_many_files_str = \
+"That's too many files for this assignment.\n" + \
+"Please ensure that the correct number of source code files are attached with the right file extension (ex: work.py)."
 
 class NoAssignmentNumber(Exception):
     "Raised when we can't figure out what assignment the email is about"
@@ -124,20 +133,27 @@ for n_msg in n_msgs[0].split():
 
         _, data = imap.store(n_msg,'+FLAGS','\Seen')
 
+    except UnknownAssignment:
+        print(f"Unknown assignment number!")
+        send_result(student_email, message_id, assign_n, 0, 1, unknown_assign_str)
+
     except NoSourceFile:
         print(f"No source code!")
         send_result(student_email, message_id, assign_n, 0, 1, no_code_str)
 
-    except NoAssignmentNumber:
+    except TooManyFiles:
+        print(f"Too many Files!")
+        send_result(student_email, message_id, assign_n, 0, 1, too_many_files_str)
 
+    except NoAssignmentNumber:
         print(f"No assignment number!")
         send_result(student_email, message_id, "?", 0, 1, no_assignno_str)
-        _mark_as_read(n_msg)
 
     except NotSchoolAddress:
         # don't respond, just mark as read and ignore
         print(f"Not a School Address!")
         _mark_as_read(n_msg)
+
 
 imap.close()
 imap.logout()

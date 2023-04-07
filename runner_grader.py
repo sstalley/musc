@@ -15,7 +15,7 @@ class TooManyFiles(Exception):
 
 
 # Taken from https://stackabuse.com/python-validate-email-address-with-regular-expressions-regex/
-email_regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+email_regex = re.compile(r'[ \t]*([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+[ \t]*')
 
 def _run_time(cmd):
     start_time = time.time()
