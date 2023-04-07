@@ -54,7 +54,11 @@ def _mark_as_read(n_msg):
 # https://gist.github.com/kngeno/5337e543eb72174a6ac95e028b3b6456
 
 def cleanup_directory(filetype=".py", file_dir="./test_dir/"):
-    subprocess.call(["rm",  os.path.join(file_dir, "*" + filetype)])
+    try:
+        subprocess.call(["rm",  os.path.join(file_dir, "*" + filetype)])
+    except FileNotFoundError:
+        print("TODO SOS: fix this error")
+        pass
 
 def download_attachments(message, filetype=".py", file_dir="./test_dir/"):
     files = []
