@@ -32,13 +32,13 @@ with open( spam_list, 'r' ) as the_file:
 
     for student in reader:
         #Kinda hacky - should probably only open this once, but oh well
-        with open( prompt_file, 'r' ) as the_file:
+        with open( prompt_file, 'r', encoding="utf-8") as the_file:
             prompt = the_file.readlines()
             body = make_body(prompt, student, tail_str)
             msg = MIMEText(body)
             msg['Subject'] = subject
             msg['From'] = gmail_email
             msg['To'] = student['email']
-            # smtp_server.sendmail(gmail_email, recipients, msg.as_string())
+            #smtp_server.sendmail(gmail_email, [student['email']], msg.as_string())
 
     smtp_server.quit()
