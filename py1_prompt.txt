@@ -1,0 +1,82 @@
+PY-1 ASSIGNMENT DETAILS
+-----------------------
+
+Due Date:
+---------
+12:00 Noon, April 17th, 2023
+
+Special Rules for PY Assignments:
+---------------------------------
+ - Submit as many times as you want before the deadline:
+	- MUSC’s time isn’t valuable - try until you get the grade you want
+	- When it’s good enough you’re done (enjoy your weekend anxiety-free)
+ - You are allowed (and encouraged) to work together on all PY assignments
+	- You must list everyone you work with in the comments
+ - You are allowed to take the code from anywhere on the internet, but:
+	- You must include links to sources in the comments
+	- You must understand and be able to explain how every line works
+	- If it looks funky I will ask questions
+
+Instructions for Using MUSC:
+----------------------------
+To get an assignment graded by MUSC, Send an email to:
+musc.pdx@gmail.com
+
+The E-mail must:
+ - be from an @pdx.edu email address
+ - have an attached .py file to grade
+ - only have one number in the Subject: the assignment number
+ 				(Anything else is OK, but only one number)
+
+MUSC will check and run the attached .py file & assign a grade.
+
+
+Problem Overview:
+-----------------
+For PY-1 you will be writing a program that calculates output values for following circuit:
+                        R1
+ TP1-> 0-----0--------WWWWWW--------0-----O <-TP2
+             |                      |
+             0---WWWWWW----WWWWWW---0
+                   R2        R3
+
+R2 and R3 are in series with each other, and that combined resistance is in parallel with R1.
+The total effective resistance of this circuit can be expressed with the following equation:
+
+      R_eff = R1 | (R2 + R3)
+            = 1 / (1 / R1 + 1 / (R2 + R3) )
+
+
+Assignment Instructions:
+------------------------
+For PY-1 you will be writing a program that computes the resistance and voltage between TP1 and TP2.
+Your job is to submit a program that performs 4 steps:
+      1.) ask the user for an R3 value (in Ohms)
+      2.) calculate and print the value of R_eff (in Ohms).
+      3.) ask the user for a total current value through the circuit (in Amps),
+      4.) calculate and print the total voltage across the circuit (in Volts).
+
+To accomplish these steps, your program _must_ include 2 custom functions:
+ - calc_total_r(r3), where the input is a resistance value for r3 and the output is the total resistance of the circuit
+ - a function called ohms_law that calculates a Voltage from 2 input parameters: current (in Amps) and resistance (in Ohms).
+
+Grading:
+--------
+Out of 10 points:
+ - 1 for correctly submitting a *.py file
+ - 1 for submitting a *.py file that runs without errors
+ - 1 point for each correct input() call
+ - 3 points for each of the 2 functions:
+      - 1 for the correct function signature (name/inputs)
+      - 1 for returning valid outputs
+      - 1 for returning correct outputs
+ - up to 3 bonus points for the bonus function
+
+Bonus Function:
+---------------
+Write a function r3_voltage(r3, total_voltage)
+That computes the voltage across R3 when total_voltage is applied across the circuit. 
+Hint: look up 'voltage divider'
+
+Your Personal Fixed R values:
+-----------------------------
