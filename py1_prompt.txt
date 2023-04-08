@@ -78,5 +78,3 @@ Write a function r3_voltage(r3, total_voltage)
 That computes the voltage across R3 when total_voltage is applied across the circuit. 
 Hint: look up 'voltage divider'
 
-Your Personal Fixed R values:
------------------------------
