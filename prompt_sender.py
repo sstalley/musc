@@ -15,6 +15,11 @@ def make_body(prompt, student, footer):
     body.append(footer)
     body = "".join(body)
     print(body)
+
+    body = "<br />".join(body.split("\n"))
+
+    body = '<font face="Courier New, Courier, monospace"><pre>' + body + '</pre></font>'
+
     return body
 
 
@@ -35,10 +40,10 @@ with open( spam_list, 'r' ) as the_file:
         with open( prompt_file, 'r', encoding="utf-8") as the_file:
             prompt = the_file.readlines()
             body = make_body(prompt, student, tail_str)
-            msg = MIMEText(body)
+            msg = MIMEText(body, 'html')
             msg['Subject'] = subject
             msg['From'] = gmail_email
             msg['To'] = student['email']
-            #smtp_server.sendmail(gmail_email, [student['email']], msg.as_string())
+            smtp_server.sendmail(gmail_email, [student['email']], msg.as_string())
 
     smtp_server.quit()
