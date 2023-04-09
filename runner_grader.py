@@ -51,30 +51,30 @@ def _grade_py0(source):
     print("Standard Output:", stdout)
     print("Standard Error:", stderr)
 
-    feedback = f"{source} contents:\n"
+    feedback = [f"{source} contents:\n"]
     for line in flines:
-        feedback = feedback + line
+        feedback.append(line)
 
-    feedback = feedback + f"{source} ran in {runtime:.3f} seconds\n\nProgram Output:\n"
+    feedback.append(f"{source} ran in {runtime:.3f} seconds\n\nProgram Output:\n")
 
     for line in stdout:
-        feedback = feedback + line + "\n"
+        feedback.append(line + "\n")
 
-    feedback = feedback + "\nError Output:\n"
+    feedback.append("\nError Output:\n")
     for line in stderr:
-        feedback = feedback + line + "\n"
+        feedback.append(line + "\n")
 
 
     score = score + 1# one point for getting this far
-    feedback = feedback + "\nGrading:\nSubmitted valid .py file (+1)\n"
+    feedback.append("\nGrading:\nSubmitted valid .py file (+1)\n")
 
     if len(flines) <= 1:
         score = score + 1
-        feedback = feedback + "Extra Credit: One-line bonus (+1)\n"
+        feedback.append("Extra Credit: One-line bonus (+1)\n")
 
     if len(stderr) < 1:
         score = score + 1
-        feedback = feedback + ".py file runs without errors (+1)\n"
+        feedback.append(".py file runs without errors (+1)\n")
 
     total = 0
     for i, line in enumerate(stdout):
@@ -82,9 +82,9 @@ def _grade_py0(source):
         if i == 0:
             if re.fullmatch(email_regex, line):
                 score = score + 1
-                feedback = feedback + f"\n{line} is a valid email address (+1)"
+                feedback.append(f"\n{line} is a valid email address (+1)")
             else:
-                feedback = feedback + f"\n{line} is a not a valid email address (0)"
+                feedback.append(f"\n{line} is a not a valid email address (0)")
 
         elif i == 1:
             digits = re.findall("\d", line)
@@ -95,18 +95,18 @@ def _grade_py0(source):
 
             if n_d > 8:
                 score = score + 1
-                feedback = feedback + f"\nvalid ID number (+1)"
+                feedback.append(f"\nvalid ID number (+1)")
             else:
-                feedback = feedback + f"\nOnly found {n_d} digits of ID (0)"
+                feedback.append(f"\nOnly found {n_d} digits of ID (0)")
 
         elif i == 2:
             if int(line) == total:
                 score = score + 1
-                feedback = feedback + f"\nSum correct ({int(line)} == {total}) (+1)"
+                feedback.append(f"\nSum correct ({int(line)} == {total}) (+1)")
             else:
-                feedback = feedback + f"\nSum not correct ({int(line)} != {total}) (0)"
+                feedback.append(f"\nSum not correct ({int(line)} != {total}) (0)")
 
-    return score, 5, feedback
+    return score, 5, "".join(feedback)
 
 
 def run_grade(assign_no, path_to_source):
