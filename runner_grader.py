@@ -37,16 +37,65 @@ def _run_time(cmd):
     return runtime, stdout.decode().splitlines(), stderr.decode().splitlines()
 
 
-def _grade_py0(source):
+def _grade_py0(flines, stdout):
+
+    score = 0
+    feedback = []
+
+    if len(flines) <= 1:
+        score = score + 1
+        feedback.append("Extra Credit: One-line bonus (+1)\n")
+
+    total = 0
+    for i, line in enumerate(stdout):
+        print(f"Output Line {i}: {line}")
+        if i == 0:
+            if re.fullmatch(email_regex, line):
+                score = score + 1
+                feedback.append(f"{line} is a valid email address (+1)\n")
+            else:
+                feedback.append(f"{line} is a not a valid email address (0)\n")
+
+        elif i == 1:
+            digits = re.findall("\d", line)
+            n_d = 0
+            for d in digits:
+                n_d = n_d + 1
+                total = total + int(d)
+
+            if n_d > 8:
+                score = score + 1
+                feedback.append(f"valid ID number (+1)\n")
+            else:
+                feedback.append(f"Only found {n_d} digits of ID (0)\n")
+
+        elif i == 2:
+            if int(line) == total:
+                score = score + 1
+                feedback.append(f"Sum correct ({int(line)} == {total}) (+1)\n")
+            else:
+                feedback.append(f"Sum not correct ({int(line)} != {total}) (0)\n")
+
+    return score, feedback
+
+
+def run_grade(assign_no, path_to_source):
 
     score = 0
 
-    cmd = ['python', 'sandbox.py', source]
+    if assign_no == 0:
+        if len(path_to_source) != 1:
+            raise TooManyFiles
+        source = path_to_source[0]
+        cmd = ['python', 'sandbox.py', source]
+        score_max = 5
+    else:
+        raise UnknownAssignment
+
     runtime, stdout, stderr = _run_time(cmd)
 
     file = open(source, 'r')
     flines = file.readlines()
-
 
     print("Standard Output:", stdout)
     print("Standard Error:", stderr)
@@ -68,54 +117,19 @@ def _grade_py0(source):
     score = score + 1# one point for getting this far
     feedback.append("\nGrading:\nSubmitted valid .py file (+1)\n")
 
-    if len(flines) <= 1:
-        score = score + 1
-        feedback.append("Extra Credit: One-line bonus (+1)\n")
-
     if len(stderr) < 1:
         score = score + 1
         feedback.append(".py file runs without errors (+1)\n")
 
-    total = 0
-    for i, line in enumerate(stdout):
-        print(f"Output Line {i}: {line}")
-        if i == 0:
-            if re.fullmatch(email_regex, line):
-                score = score + 1
-                feedback.append(f"\n{line} is a valid email address (+1)")
-            else:
-                feedback.append(f"\n{line} is a not a valid email address (0)")
-
-        elif i == 1:
-            digits = re.findall("\d", line)
-            n_d = 0
-            for d in digits:
-                n_d = n_d + 1
-                total = total + int(d)
-
-            if n_d > 8:
-                score = score + 1
-                feedback.append(f"\nvalid ID number (+1)")
-            else:
-                feedback.append(f"\nOnly found {n_d} digits of ID (0)")
-
-        elif i == 2:
-            if int(line) == total:
-                score = score + 1
-                feedback.append(f"\nSum correct ({int(line)} == {total}) (+1)")
-            else:
-                feedback.append(f"\nSum not correct ({int(line)} != {total}) (0)")
-
-    return score, 5, "".join(feedback)
-
-
-def run_grade(assign_no, path_to_source):
-
     if assign_no == 0:
-        if len(path_to_source) != 1:
-            raise TooManyFiles
-        score, score_max, feedback = _grade_py0(path_to_source[0])
+        assign_score, assign_feedback = _grade_py0(flines, stdout)
     else:
         raise UnknownAssignment
 
-    return score, score_max, feedback
+
+    score = score + assign_score
+    for line in assign_feedback:
+        feedback.append(line)
+
+
+    return score, score_max, "".join(feedback)
