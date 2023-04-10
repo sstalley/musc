@@ -3,7 +3,7 @@ PY-1 ASSIGNMENT DETAILS
 
 Due Date:
 ---------
-12:00 Noon, April 17th, 2023
+12:00 Noon, April 19th, 2023
 
 Special Rules for PY Assignments:
 ---------------------------------
@@ -53,12 +53,14 @@ For PY-1 you will be writing a program that computes the resistance and voltage 
 Your job is to submit a program that performs 4 steps:
       1.) ask the user for an R3 value (in Ohms)
       2.) calculate and print the value of R_eff (in Ohms).
-      3.) ask the user for a total current value through the circuit (in Amps),
-      4.) calculate and print the total voltage across the circuit (in Volts).
+      3.) ask the user for a total voltage across the circuit (in Volts),
+      4.) calculate and print the total current through the circuit (in Amps).
 
 To accomplish these steps, your program _must_ include 2 custom functions:
  - calc_total_r(r3), where the input is a resistance value for r3 and the output is the total resistance of the circuit
- - a function called ohms_law that calculates a Voltage from 2 input parameters: current (in Amps) and resistance (in Ohms).
+ - a function ohms_law that outputs a current (in Amps) from 2 input parameters:
+    1.) voltage (in Volts)
+    2.) resistance (in Ohms)
 
 Grading:
 --------

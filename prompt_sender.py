@@ -23,6 +23,7 @@ def make_body(prompt, student, footer):
     return body
 
 
+#spam_list = r"./py1_values.csv"
 spam_list = r"./test_list.csv"
 prompt_file = "./py1_prompt.txt"
 
