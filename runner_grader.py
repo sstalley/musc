@@ -3,7 +3,8 @@ import threading
 import time
 import re
 
-MAX_RUNTIME = 300
+MAX_RUNTIME = 30
+test_dir = "./test_dir/"
 
 class UnknownAssignment(Exception):
     r"MUSC doesn't know how to grade that assignment yet"
@@ -87,7 +88,7 @@ def run_grade(assign_no, path_to_source):
         if len(path_to_source) != 1:
             raise TooManyFiles
         source = path_to_source[0]
-        cmd = ['python', 'sandbox.py', source]
+        cmd = ['python', source]
         score_max = 5
     else:
         raise UnknownAssignment

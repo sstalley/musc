@@ -5,7 +5,7 @@ import re
 import subprocess
 from account_info import gmail_imap, gmail_email, gmail_password, school_suffix
 from result_sender import send_result
-from runner_grader import run_grade, UnknownAssignment, TooManyFiles
+from runner_grader import run_grade, UnknownAssignment, TooManyFiles, test_dir
 
 unknown_assign_str = \
 "I don't know how to grade this assignment.\n" + \
@@ -53,14 +53,14 @@ def _mark_as_read(n_msg):
 # This function adapted from:
 # https://gist.github.com/kngeno/5337e543eb72174a6ac95e028b3b6456
 
-def cleanup_directory(filetype=".py", file_dir="./test_dir/"):
+def cleanup_directory(filetype=".py", file_dir=test_dir):
     try:
         subprocess.call(["rm",  os.path.join(file_dir, "*" + filetype)])
     except FileNotFoundError:
         print("TODO SOS: fix this error")
         pass
 
-def download_attachments(message, filetype=".py", file_dir="./test_dir/"):
+def download_attachments(message, filetype=".py", file_dir=test_dir):
     files = []
     for part in message.walk():
        if part.get_content_maintype() == 'multipart':
