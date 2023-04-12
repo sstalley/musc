@@ -6,6 +6,11 @@ import re
 MAX_RUNTIME = 30
 test_dir = "./test_dir/"
 
+
+class UnimplementedAssignment(Exception):
+    r"MUSC can't grade that assignment yet"
+    pass
+
 class UnknownAssignment(Exception):
     r"MUSC doesn't know how to grade that assignment yet"
     pass
@@ -17,6 +22,8 @@ class TooManyFiles(Exception):
 
 # Taken from https://stackabuse.com/python-validate-email-address-with-regular-expressions-regex/
 email_regex = re.compile(r'[ \t]*([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+[ \t]*')
+
+PY1_MAX_SCORE = 10
 
 def _run_time(cmd):
     start_time = time.time()
@@ -37,6 +44,21 @@ def _run_time(cmd):
 
     return runtime, stdout.decode().splitlines(), stderr.decode().splitlines()
 
+def _grade_py1(flines, stdout):
+
+    for i, line in enumerate(stdout):
+        print(f"Output Line {i}: {line}")
+
+    # mostly copy what the py1 sandbox already figured out
+    for line in reverse(stdout):
+        if re.search("MUSC TOTAL", line) is None:
+            continue
+
+        score = int(re.search("\\d+", line).group())
+
+        feedback = f"Score: {score} out of {PY1_MAX_SCORE}\n"
+
+    return score, feedback
 
 def _grade_py0(flines, stdout):
 
@@ -71,9 +93,16 @@ def _grade_py0(flines, stdout):
                 feedback.append(f"Only found {n_d} digits of ID (0)\n")
 
         elif i == 2:
-            if int(line) == total:
+            try:
+                sum_val = int(line)
+            except ValueError:
+                sum_val = -1
+
+            if sum_val == total:
                 score = score + 1
                 feedback.append(f"Sum correct ({int(line)} == {total}) (+1)\n")
+            elif sum_val == -1:
+                feedback.append(f"Sum could not be found (0)\n")
             else:
                 feedback.append(f"Sum not correct ({int(line)} != {total}) (0)\n")
 
@@ -90,6 +119,16 @@ def run_grade(assign_no, path_to_source):
         source = path_to_source[0]
         cmd = ['python', source]
         score_max = 5
+    elif assign_no == 1:
+        if len(path_to_source) != 1:
+            raise TooManyFiles
+        source = path_to_source[0]
+        cmd = ['python', 'py1_tester.py', source]
+        score_max = 10
+
+    elif assign_no < 6:
+        raise UnimplementedAssignment
+
     else:
         raise UnknownAssignment
 
@@ -124,6 +163,10 @@ def run_grade(assign_no, path_to_source):
 
     if assign_no == 0:
         assign_score, assign_feedback = _grade_py0(flines, stdout)
+    elif assign_no == 1:
+        assign_score, assign_feedback = _grade_py1(flines, stdout)
+    elif assign_no < 6:
+        raise UnimplementedAssignment
     else:
         raise UnknownAssignment
 

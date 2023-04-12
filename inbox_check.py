@@ -7,6 +7,11 @@ from account_info import gmail_imap, gmail_email, gmail_password, school_suffix
 from result_sender import send_result
 from runner_grader import run_grade, UnknownAssignment, TooManyFiles, test_dir
 
+
+unimplemented_assign_str = \
+"I don't know how to grade this assignment yet.\n" + \
+"Hopefully your instructor finishes the software soon so you can get feedback.\n"
+
 unknown_assign_str = \
 "I don't know how to grade this assignment.\n" + \
 "Please ensure that the assignment number is correct and the only number in the Subject field.\n\n" + \
@@ -136,6 +141,10 @@ for n_msg in n_msgs[0].split():
         send_result(student_email, message_id, assign_n, score, max_score, feedback)
 
         _, data = imap.store(n_msg,'+FLAGS','\Seen')
+
+    except UnimplementedAssignment:
+        print(f"Unimplemented assignment number!")
+        send_result(student_email, message_id, assign_n, 0, 1, unimplemented_assign_str)
 
     except UnknownAssignment:
         print(f"Unknown assignment number!")
