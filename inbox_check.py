@@ -5,7 +5,7 @@ import re
 import subprocess
 from account_info import gmail_imap, gmail_email, gmail_password, school_suffix
 from result_sender import send_result
-from runner_grader import run_grade, UnknownAssignment, TooManyFiles, test_dir, UnimplementedAssignment
+from runner_grader import run_grade, UnknownAssignment, TooManyFiles, test_dir, UnimplementedAssignment, ValuesNotFound
 
 unimplemented_assign_str = \
 "I don't know how to grade this assignment yet.\n" + \
@@ -35,6 +35,12 @@ too_many_files_str = \
 "That's too many files for this assignment.\n" + \
 "Please ensure that the correct number of source code files are attached with the right file extension (ex: work.py)."
 
+no_values_str = \
+"I couldn't find the student-specific values for this email.\n" + \
+"This is most likely a clerical bug that the instructor needs to fix.\n" + \
+"please email them and bug them about this error."
+
+
 class NoAssignmentNumber(Exception):
     "Raised when we can't figure out what assignment the email is about"
     pass
@@ -46,8 +52,6 @@ class NotSchoolAddress(Exception):
 class NoSourceFile(Exception):
     "Raised when there isn't an attached source file"
     pass
-
-
 
 
 def _mark_as_read(n_msg):
@@ -129,7 +133,7 @@ for n_msg in n_msgs[0].split():
         path_to_source = download_attachments(message, file_dir="./test_dir")
 
         # grade the submission
-        score, max_score, feedback = run_grade(assign_n, path_to_source)
+        score, max_score, feedback = run_grade(assign_n, path_to_source, student_email)
 
         # get rid of the evidence :P
         cleanup_directory()
@@ -156,6 +160,10 @@ for n_msg in n_msgs[0].split():
     except TooManyFiles:
         print(f"Too many Files!")
         send_result(student_email, message_id, assign_n, 0, 1, too_many_files_str)
+
+    except ValuesNotFound:
+        print(f"couldn't find student-specific values!")
+        send_result(student_email, message_id, assign_n, 0, 1, no_values_str)
 
     except NoAssignmentNumber:
         print(f"No assignment number!")

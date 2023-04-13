@@ -2,6 +2,7 @@ import subprocess
 import threading
 import time
 import re
+import csv
 
 MAX_RUNTIME = 30
 test_dir = "./test_dir/"
@@ -19,11 +20,17 @@ class TooManyFiles(Exception):
     r"This assignment doesn't need that many source files"
     pass
 
+class ValuesNotFound(Exception):
+    r"Could Not Find Student-specific Values"
+    pass
 
 # Taken from https://stackabuse.com/python-validate-email-address-with-regular-expressions-regex/
 email_regex = re.compile(r'[ \t]*([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+[ \t]*')
+#TODO: refactor to just no whitespace version
+email_regex_nows = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
 
 PY1_MAX_SCORE = 10
+py1_values_file = "py1_values.csv"
 
 def _run_time(cmd):
     start_time = time.time()
@@ -44,10 +51,25 @@ def _run_time(cmd):
 
     return runtime, stdout.decode().splitlines(), stderr.decode().splitlines()
 
+
+def _py1_get_rs(student_email):
+    with open( py1_values_file, 'r' ) as the_file:
+        reader = csv.DictReader(the_file)
+
+        for student in reader:
+            print(f"comparing:{student['email'].lower()} and {student_email.lower()}")
+            if student_email.lower().find(student['user'].lower()+"@") != -1:
+                return str(student['r1']), str(student['r2'])
+
+    raise ValuesNotFound
+
 def _grade_py1(flines, stdout):
 
     for i, line in enumerate(stdout):
         print(f"Output Line {i}: {line}")
+
+
+    score = 0 # in case there is no output at all
 
     # mostly copy what the py1 sandbox already figured out
     for line in reversed(stdout):
@@ -109,7 +131,7 @@ def _grade_py0(flines, stdout):
     return score, feedback
 
 
-def run_grade(assign_no, path_to_source):
+def run_grade(assign_no, path_to_source, student_email):
 
     score = 0
 
@@ -123,7 +145,8 @@ def run_grade(assign_no, path_to_source):
         if len(path_to_source) != 1:
             raise TooManyFiles
         source = path_to_source[0]
-        cmd = ['python', 'py1_tester.py', source]
+        r1, r2 = _py1_get_rs(student_email)
+        cmd = ['python', 'py1_tester.py', source, r1, r2]
         score_max = 10
 
     elif assign_no < 6:

@@ -3,11 +3,11 @@ import time
 import re
 import os
 from runner_grader import MAX_RUNTIME, PY1_MAX_SCORE, test_dir
-from py1_roulette import e12rs
 from pathlib import Path
 
 #various semi-common voltages
 voltzz = [ "1.5", "3.3", "3.7", "5.0", "7.2", "12", "24", "120"]
+e12rs = [100, 120, 150, 180, 220, 270, 330, 390, 470, 560, 680, 820]
 
 
 #faking suff hopefully?
@@ -84,11 +84,13 @@ def score_fn(fn_name, ctrl_name, fn_valuez, ctrl_valuez):
     return 3
 
 
-if len(sys.argv) < 2:
-    print(f"usage: {sys.argv[0]} <untrusted_script.py>")
+if len(sys.argv) < 4:
+    print(f"usage: {sys.argv[0]} <untrusted_script.py> <r1> <r2>")
     exit()
 
 fileName = sys.argv[1]
+__r1 = str(sys.argv[2])
+__r2 = str(sys.argv[3])
 
 with open(fileName, mode='r') as file: # b is important -> binary
     source_code = file.read()
