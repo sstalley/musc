@@ -50,7 +50,7 @@ def _grade_py1(flines, stdout):
         print(f"Output Line {i}: {line}")
 
     # mostly copy what the py1 sandbox already figured out
-    for line in reverse(stdout):
+    for line in reversed(stdout):
         if re.search("MUSC TOTAL", line) is None:
             continue
 
@@ -119,12 +119,12 @@ def run_grade(assign_no, path_to_source):
         source = path_to_source[0]
         cmd = ['python', source]
         score_max = 5
-    # elif assign_no == 1:
-    #     if len(path_to_source) != 1:
-    #         raise TooManyFiles
-    #     source = path_to_source[0]
-    #     cmd = ['python', 'py1_tester.py', source]
-    #     score_max = 10
+    elif assign_no == 1:
+        if len(path_to_source) != 1:
+            raise TooManyFiles
+        source = path_to_source[0]
+        cmd = ['python', 'py1_tester.py', source]
+        score_max = 10
 
     elif assign_no < 6:
         raise UnimplementedAssignment
@@ -163,8 +163,8 @@ def run_grade(assign_no, path_to_source):
 
     if assign_no == 0:
         assign_score, assign_feedback = _grade_py0(flines, stdout)
-    # elif assign_no == 1:
-    #     assign_score, assign_feedback = _grade_py1(flines, stdout)
+    elif assign_no == 1:
+        assign_score, assign_feedback = _grade_py1(flines, stdout)
     elif assign_no < 6:
         raise UnimplementedAssignment
     else:

@@ -12,9 +12,8 @@ voltzz = [ "1.5", "3.3", "3.7", "5.0", "7.2", "12", "24", "120"]
 
 #faking suff hopefully?
 def __input(prompt=None):
-    print("__input() HIT!")
     if prompt is not None:
-        print(f"prompt:{prompt}")
+        print(prompt + "\n")
 
     return "10.0"
 
@@ -107,9 +106,9 @@ if inputs == 2:
 
 
 # Semi-Hack: go to my input:
-print(f"old source code:\n{source_code}")
+# print(f"old source code:\n{source_code}")
 source_code = re.sub("input\(", "__input(", source_code)
-print(f"new source code:\n{source_code}")
+# print(f"new source code:\n{source_code}")
 
 
 fns = ["calc_total_r", "ohms_law", "r3_voltage"]
