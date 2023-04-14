@@ -63,20 +63,17 @@ def _py1_get_rs(student_email):
 
     raise ValuesNotFound
 
-def _grade_py1(flines, stdout):
+def _grade_py1(flines, stdout, score):
 
     for i, line in enumerate(stdout):
         print(f"Output Line {i}: {line}")
-
-
-    score = 0 # in case there is no output at all
 
     # mostly copy what the py1 sandbox already figured out
     for line in reversed(stdout):
         if re.search("MUSC TOTAL", line) is None:
             continue
 
-        score = int(re.search("\\d+", line).group())
+        score = score + int(re.search("\\d+", line).group())
 
         feedback = f"Score: {score} out of {PY1_MAX_SCORE}\n"
 
@@ -186,15 +183,14 @@ def run_grade(assign_no, path_to_source, student_email):
 
     if assign_no == 0:
         assign_score, assign_feedback = _grade_py0(flines, stdout)
+        score = score + assign_score
     elif assign_no == 1:
-        assign_score, assign_feedback = _grade_py1(flines, stdout)
+        score, assign_feedback = _grade_py1(flines, stdout, score)
     elif assign_no < 6:
         raise UnimplementedAssignment
     else:
         raise UnknownAssignment
 
-
-    score = score + assign_score
     for line in assign_feedback:
         feedback.append(line)
 

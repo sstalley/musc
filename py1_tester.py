@@ -95,8 +95,6 @@ __r2 = str(sys.argv[3])
 with open(fileName, mode='r') as file: # b is important -> binary
     source_code = file.read()
 
-
-
 # GLOBAL CHECKS (does it call input twice?)
 inputs = len(re.findall("input\(", source_code))
 print(f"Inputs counted: {inputs}")
@@ -122,12 +120,6 @@ try:
 except Exception as e:
     print(e)
     print("something bad happend when importing functions")
-
-
-#TODO: actually lookup correct resistance values
-# For now just use fixed values for sstalley
-__r1 = "100"
-__r2 = "120"
 
 #Sweep resistor values and check
 fn_values_1   = [[str(r)] for r in e12rs]
