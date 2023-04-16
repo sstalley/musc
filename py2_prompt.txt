@@ -32,7 +32,7 @@ MUSC will evaluate the email & assign a grade.
 Problem Overview:
 -----------------
 MUSC is helping Tim 'The Toolman' Taylor is build an electric hot rod for the big race.
-He is trying to beat Al Boreland, Mike Baxter, and Tim's nemisis: Bob Vila.
+He is trying to beat Al Borland, Mike Baxter, and Tim's nemisis: Bob Vila.
 They have asked for your help to add "more power" to his car and leave the competition in the dust.
 Specifically, they need your help to design the battery pack.
 

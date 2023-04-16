@@ -92,7 +92,7 @@ fileName = sys.argv[1]
 __r1 = str(sys.argv[2])
 __r2 = str(sys.argv[3])
 
-with open(fileName, mode='r') as file: # b is important -> binary
+with open(fileName, mode='r') as file:
     source_code = file.read()
 
 # GLOBAL CHECKS (does it call input twice?)
