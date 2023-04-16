@@ -1,0 +1,152 @@
+PY-2 ASSIGNMENT DETAILS
+-----------------------
+
+Due Date:
+---------
+12:00 Noon, April 26th, 2023
+
+Special Rules for PY Assignments:
+---------------------------------
+ - Submit as many times as you want before the deadline:
+	- MUSC’s time isn’t valuable - try until you get the grade you want
+	- When it’s good enough you’re done (enjoy your weekend anxiety-free)
+ - You are allowed (and encouraged) to work together on all PY assignments
+	- You must list everyone you work with in the comments
+ - You are allowed to take the code from anywhere on the internet, but:
+	- You must include links to sources in the comments
+	- You must understand and be able to explain how every line works
+	- If it looks funky I will ask questions
+
+Instructions for Using MUSC:
+----------------------------
+To get an assignment graded by MUSC, Send an email to:
+musc.pdx@gmail.com
+
+The E-mail must:
+ - be from an @pdx.edu email address
+ - only have one number in the Subject: the assignment number
+ 				(Anything else is OK, but only one number)
+
+MUSC will evaluate the email & assign a grade.
+
+Problem Overview:
+-----------------
+MUSC is helping Tim 'The Toolman' Taylor is build an electric hot rod for the big race.
+He is trying to beat Al Boreland, Mike Baxter, and Tim's nemisis: Bob Vila.
+They have asked for your help to add "more power" to his car and leave the competition in the dust.
+Specifically, they need your help to design the battery pack.
+
+Lithium Ion Battery Packs:
+--------------------------
+Lithium Ion Battery packs consist of individual Lithium Ion cells wired together.
+How the individual cells are wired together determines the voltage and current of the battery pack.
+The configuration of a battery pack can be described by an S number and a P number.
+
+The S number is the number of battery banks that are wired in series.
+It determines the voltage of the battery pack.
+The P number is the number of parallel cells per battery bank.
+It determines the current of the battery pack.
+
+For example, a "14S6P" battery would have 14 banks of 6 cells each, and contain a total of 14 * 6 = 84 cells.
+In comparision, a "15S5P" battery has 15 banks of 5 cells each and would provide more voltage but less current.
+With only 75 cells, the 15S5P would also be lighter, but contain less overall power.
+
+Assignment Instructions:
+------------------------
+For PY-2 you will be tuning the performance of a battery pack.
+Your job is to Send MUSC an email that contains the The "SP" Number you wish to try in the first line of the email.
+For example, if you want to try a "1S2P" battery, make the first line of your email:
+1S2P
+
+MUSC will build your battery, watch the race, give you the highlights, and tell you the results.
+
+Technical Details:
+------------------
+The goal in this assignment is to pick an S number and P number for the hot rod's battery pack and beat the other racers.
+MUSC will build a pack for Tim based on your design and tell you how the race goes.
+
+MUSC has run the calculations and determined that the battery affects the hot rod's race time in 3 ways:
+    - The S number improves voltage and therefore top speed
+    - The P number improves current and therefore torque & acceleration
+    - The Weight of the battery reduces top speed and acceleration.
+
+MUSCs has developed an equation that accurately predicts the performance of the hot rod based on the battery design,
+but hasn't had time to crunch the numbers and find a good configuration.
+
+That's where you come in.
+
+In this assignment you are tasked with designing a battery pack that that balances voltage, current, and weight.
+The goal is to design a battery that outperforms the other hot rods and minimizes the time to complete the race.
+Below you will find MUSC's calculations which you can use to design the battery and tune the performance of your hot rod.
+Minimize t_total and beat out the other racers.
+
+On your marks, get set, go!
+
+MUSCs calculations:
+-------------------
+The weight of the battery can be calculated as:
+    w_battery = w_per_battery_cell * S * P
+
+The weight of the hot rod is equal to the weight of the battery plus the cars "dry" weight:
+    w_total = w_dry + w_battery
+
+The race time of the hot rod can be calculated as:
+    t_total = t_no_power - k_speed * speed_max - k_accel * accel_max
+Where:
+    - t_no_power is the time of the hot rod without a battery
+    - k_speed is the impact of the top speed on the race time
+    - k_accel is the impact of the acceleration on the race time
+
+speed_max is defined as:
+    speed_max = k_voltage * S - k_speed_weight * w_total
+Where:
+    - k_voltage is the impact of the S number on top speed
+    - k_speed_weight is the impact of weight on top speed
+
+accel_max is defined as:
+    accel_max = k_current * P - k_torque_weight * w_total
+Where:
+    - k_current is the impact of the P number on acceleration
+    - k_accel_weight is the impact of weight on acceleration
+
+Grading:
+--------
+Out of 10 points:
+ - 1 for correctly submitting an email
+ - 1 for submitting an email where MUSC could find the SP number
+ - up to 8 points for the performance of the hot rod:
+     - 8 points for 1st place
+		 - 7 points for 2nd place
+		 - 5 points for 3rd place
+		 - 0 points for last place
+
+Note: Race Times are NOT comparable between students, but challenge equally difficult in all cases.
+      Race outcomes and grades are consistent (comparably-close tunings recieve same grade).
+
+Tuning Tips:
+------------
+Each other driver has a particular problem with their design.
+If your design is performing similar to theirs, consider the following:
+ - Mike's car has plenty of power, but is too heavy
+ - Al's car has plenty of speed but not enough torque.
+ - Bob's car is close, but it's missing something...
+
+Hints:
+------
+Solve however you like, but STRONGLY suggest using matplotlib and numpy to evaulate problem.
+- One dimensional plots will get you in the ballpark
+- Two dimensional plots will get you to a good value much faster
+- Also possible to solve with multivariable calculus
+- Also possible to solve with guess & check... but it will take a while.
+
+Variables:
+----------
+w_per_battery_cell
+w_dry
+t_no_power
+k_speed
+k_accel
+k_voltage
+k_speed_weight
+k_current
+k_torque_weight
