@@ -13,7 +13,7 @@ e12rs = [100, 120, 150, 180, 220, 270, 330, 390, 470, 560, 680, 820]
 #faking suff hopefully?
 def __input(prompt=None):
     if prompt is not None:
-        print(prompt + "\n")
+        print(prompt + "10.0\n")
 
     return "10.0"
 
@@ -120,6 +120,8 @@ try:
 except Exception as e:
     print(e)
     print("something bad happend when importing functions")
+    print(f"MUSC TOTAL {score}")
+    exit()
 
 #Sweep resistor values and check
 fn_values_1   = [[str(r)] for r in e12rs]
