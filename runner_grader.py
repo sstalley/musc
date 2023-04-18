@@ -68,6 +68,7 @@ def _grade_py1(flines, stdout, score):
     for i, line in enumerate(stdout):
         print(f"Output Line {i}: {line}")
 
+    feedback = f"Score: 0 out of {PY1_MAX_SCORE} (error running code)\n"
     # mostly copy what the py1 sandbox already figured out
     for line in reversed(stdout):
         if re.search("MUSC TOTAL", line) is None:
