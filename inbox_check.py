@@ -87,7 +87,7 @@ def download_attachments(message, filetype=".py", file_dir=test_dir):
                continue
 
            print(f'fileName:{fileName}')
-           filePath = os.path.join(file_dir, fileName)
+           filePath = os.path.join(file_dir, "source.py")
            print(f"Downloading {fileName} ...")
            fp = open(filePath, 'wb')
            fp.write(part.get_payload(decode=True))
@@ -135,13 +135,15 @@ for n_msg in n_msgs[0].split():
         # grade the submission
         score, max_score, feedback = run_grade(assign_n, path_to_source, student_email)
 
-        # get rid of the evidence :P
-        cleanup_directory()
-
         #For testing pass everything that is valid
 
-
         send_result(student_email, message_id, assign_n, score, max_score, feedback)
+
+        # get rid of the evidence :P
+        try:
+            cleanup_directory()
+        except:
+            pass
 
         _, data = imap.store(n_msg,'+FLAGS','\Seen')
 
