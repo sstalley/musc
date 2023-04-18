@@ -48,6 +48,15 @@ def score_fn(fn_name, ctrl_name, fn_valuez, ctrl_valuez):
     except NameError:
         print(f"Could not find function {fn_name}")
         return 0
+    except TypeError:
+        fn_type = exec(f"type({fn_name})")
+        print(f"{fn_name} is a {fn_type}, not a function")
+        return 0
+    except Exception as e:
+        print(f"calling {fn_name} threw the following exception:")
+        print(e)
+        print(f"Not gonna try any harder...")
+        return 0
 
     # does it return valid values?
     for fn_i in fn_valuez:
