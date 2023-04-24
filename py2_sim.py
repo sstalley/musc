@@ -13,7 +13,7 @@ class Racer:
     def _get_accel(params, P, weight):
         return float(params['k_current']) * P - float(params['k_torque_weight']) * weight
 
-    def __init__(self, name, params=None, S=None, P=None, speed=None, accel=None):
+    def __init__(self, name, params=None, S=None, P=None, km, kp, cm, cp):
         self.name = name
         self.t_no_power = float(params['t_no_power'])
         self.k_speed = float(params['k_speed'])
