@@ -1,5 +1,6 @@
 import sys
 import csv
+import numpy as np
 
 MIN_TIME = 87.9 # 0UTTAT1ME
 
@@ -46,7 +47,7 @@ class Racer:
 
 
 def make_racers(params, S, P):
-    racer_names = ["Tim Taylor", "Al Borland", "Mike Baxter", "Bob Vila"]
+    racer_names = [f"Tim Taylor ({params['user'].upper()})", "Al Borland", "Mike Baxter", "Bob Vila"]
 
     tim = Racer(racer_names[0], params=params, S=S, P=P)
 
@@ -75,6 +76,8 @@ class RaceTrack:
         if prog is None:
             prog = 1.0
             return_time = True
+        else:
+            prog = np.sqrt(np.sqrt(prog)) # hack to have stuff happen earlier on in the race
 
         for racer in self.racers:
             name = racer.get_name()
@@ -82,26 +85,37 @@ class RaceTrack:
             status.append((name,time))
 
         status.sort(key=takeTime)
-
-        if return_time:
-            report = ["FINAL RACE RESULTS:"]
-        elif prog == 0:
-            report = ["Standings right off the line:"]
-        else:
-            report = [f"Standings at {prog:.0%} point:"]
-
+        report = []
         for place, (racer, time) in enumerate(status):
-            line = f"#{place+1}: {racer:<16}"
+            line = f"#{place+1}: {racer:<26}"
             if return_time:
                 line = line + f"  {time:.3f} Seconds"
             report.append(line)
         return "\n".join(report)
 
+    def standings_diff(stand1, stand2):
+        for line1, line2 in zip(stand1, stand2):
+            if line1 != line2:
+                return True
+        return False
+
     def run_race(self):
-        for time in [0, 0.25, 0.5, 0.75, None]:
-            print(self.get_race_status(prog=time)+"\n")
+        orig_standings = self.get_race_status(prog=0.0)
+        print("Standings right off the line:")
+        print(orig_standings+"\n")
+
+        #SQRT makes stuff happen in the race sooner
+        for time in np.linspace(0,0.999,250):
+            standings = self.get_race_status(prog=time)
+
+            if RaceTrack.standings_diff(standings, orig_standings):
+                print(f"Standings at {time:.0%} point:")
+                print(standings+"\n")
+                orig_standings = standings
 
 
+        print("FINAL RACE RESULTS:")
+        print(self.get_race_status())
 
 
 if len(sys.argv) < 5:
