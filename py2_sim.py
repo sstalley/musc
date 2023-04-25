@@ -1,39 +1,45 @@
 import sys
 import csv
 
+MIN_TIME = 87.9 # 0UTTAT1ME
+
 class Racer:
 
-    def _get_weight(params, S, P):
-        w_battery = float(params['w_per_battery_cell']) * S * P
-        return w_battery + float(params['w_dry'])
+    def get_eff(S,P, ssppk):
+        return (S*S + P*P) * ssppk
 
-    def _get_speed(params, S, weight):
-        return float(params['k_voltage']) * S - float(params['k_speed_weight']) * weight
+    def get_weight(S,P, spk):
+        return (S*P) * spk
 
-    def _get_accel(params, P, weight):
-        return float(params['k_current']) * P - float(params['k_torque_weight']) * weight
+    def get_speed(S, sk):
+        return S * sk
 
-    def __init__(self, name, params=None, S=None, P=None, km, kp, cm, cp):
+    def get_accel(P, pk):
+        return P * pk
+
+    def __init__(self, name, params=None, S=None, P=None):
         self.name = name
-        self.t_no_power = float(params['t_no_power'])
-        self.k_speed = float(params['k_speed'])
-        self.k_accel = float(params['k_accel'])
+        kp = float(params["kp"])
+        km = float(params["km"])
+        cp = float(params["cp"])
+        cm = float(params["cm"])
 
-        if speed is None:
-            weight = Racer._get_weight(params, S, P)
-            self.speed=Racer._get_speed(params,S, weight)
-        else:
-            self.speed=speed
-        if accel is None:
-            weight = Racer._get_weight(params, S, P)
-            self.accel=Racer._get_accel(params,P, weight)
-        else:
-            self.accel=accel
+        ssppk = kp + km
+        spk = 2 * (kp - km)
+        sk = 2 * (cp * kp + cm * km)
+        pk = 2 * (cp * kp - cm * km)
+        self.k = kp * cp * cp + km * cm * cm + MIN_TIME
+
+        self.eff = Racer.get_eff(S,P, ssppk)
+        self.weight = Racer.get_weight(S,P, spk)
+        self.speed = Racer.get_speed(S, sk)
+        self.accel = Racer.get_accel(P, pk)
+
 
     def get_perf(self, prog):
-        #prog = 1: (final) 50/50 torque and time
-        #prog = 0: all torque
-        return self.t_no_power - (self.accel * self.k_accel) + (prog * (self.speed * self.k_speed))
+        #prog = 1: (final) 50/50 S&P, SS+PP&SP
+        #prog = 0: all S & P terms
+        return self.k - self.speed - self.accel + prog * (self.weight + self.eff)
 
     def get_name(self):
         return self.name
@@ -46,10 +52,10 @@ def make_racers(params, S, P):
 
     racers = [tim]
     for i, name in enumerate(racer_names[1:]):
-        comp_str = f"comp_{i}_"
+        comp_str = name[0]
         competitor = Racer(name, params=params,
-                           speed=float(params[comp_str + "speed"]),
-                           accel=float(params[comp_str + "accel"]))
+                           S=float(params[comp_str + "s"]),
+                           P=float(params[comp_str + "p"]))
         racers.append(competitor)
 
     return racers
@@ -113,7 +119,7 @@ with open(csvFileName, mode='r') as file:
     reader = csv.DictReader(file)
     found = False
     for student in reader:
-        if student['username'].strip().lower() == username.strip().lower():
+        if student['user'].strip().lower() == username.strip().lower():
             found = True
             params = student
             break
