@@ -61,7 +61,6 @@ def make_racers(params, S, P):
 
     return racers
 
-
 def takeTime(elem):
     return elem[1]
 
@@ -91,6 +90,12 @@ class RaceTrack:
             if return_time:
                 line = line + f"  {time:.3f} Seconds"
             report.append(line)
+
+        if return_time:
+            for racer, score in zip(status, [10, 9, 7, 2]):
+                if racer[0] == self.racers[0].get_name():
+                    report.append(f"\nMUSC TOTAL {score}")
+
         return "\n".join(report)
 
     def standings_diff(stand1, stand2):

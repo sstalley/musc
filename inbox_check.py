@@ -94,9 +94,6 @@ def download_attachments(message, filetype=".py", file_dir=test_dir):
            fp.close()
            files.append(filePath)
 
-    if len(files) < 1:
-        raise NoSourceFile
-
     return files
 
 # Credit to NeuralNine for putting together a great tutorial
@@ -127,13 +124,28 @@ for n_msg in n_msgs[0].split():
         if sub_nums is None:
             raise NoAssignmentNumber
 
+        body = ""
+
+        if message.is_multipart():
+            for part in message.walk():
+                ctype = part.get_content_type()
+                cdispo = str(part.get('Content-Disposition'))
+
+                # skip any text/plain (txt) attachments
+                if ctype == 'text/plain' and 'attachment' not in cdispo:
+                    body = part.get_payload(decode=True)  # decode
+                    break
+        # not multipart - i.e. plain text, no attachments, keeping fingers crossed
+        else:
+            body = message.get_payload(decode=True)
+
         assign_n = int(subject[sub_nums.start():sub_nums.end()])
 
         # download attachments to run
         path_to_source = download_attachments(message, file_dir="./test_dir")
 
         # grade the submission
-        score, max_score, feedback = run_grade(assign_n, path_to_source, student_email)
+        score, max_score, feedback = run_grade(assign_n, path_to_source, student_email, body)
 
         #For testing pass everything that is valid
 
