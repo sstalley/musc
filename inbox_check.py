@@ -153,7 +153,8 @@ for n_msg in n_msgs[0].split():
 
         # get rid of the evidence :P
         try:
-            cleanup_directory()
+            if len(path_to_source) > 0:
+                cleanup_directory()
         except:
             pass
 

@@ -57,11 +57,16 @@ def _run_time(cmd):
 
 def _py2_get_vals(email_body):
 
+    print("PY2 - getting values")
+
+    print(email_body)
     try:
-        s_str = re.findall(r'[sS]\d+', email_body[0])[0]
-        p_str = re.findall(r'[pP]\d+', email_body[0])[0]
-        s = int(s_str[1:])
-        p = int(p_str[1:])
+        email_body = str(email_body)
+        print(email_body)
+        s_str = re.findall(r'\d+[sS]', email_body)[0]
+        p_str = re.findall(r'\d+[pP]', email_body)[0]
+        s = int(s_str[:-1])
+        p = int(p_str[:-1])
 
     except Exception as e:
         print("Exception raised while looking for S & P values:", e)
@@ -81,7 +86,7 @@ def _py1_get_rs(student_email):
     raise ValuesNotFound
 
 
-def _grade_pre_graded_result(flines, stdout, score, max_score):
+def _grade_pre_graded_result(stdout, score, max_score):
     for i, line in enumerate(stdout):
         print(f"Output Line {i}: {line}")
 
@@ -97,12 +102,11 @@ def _grade_pre_graded_result(flines, stdout, score, max_score):
 
     return score, feedback
 
-def _grade_py2(flines, stdout, score):
-    _grade_pre_graded_result(flines, stdout, score, PY2_MAX_SCORE)
+def _grade_py2(stdout, score):
+    return _grade_pre_graded_result(stdout, score, PY2_MAX_SCORE)
 
-
-def _grade_py1(flines, stdout, score):
-    _grade_pre_graded_result(flines, stdout, score, PY1_MAX_SCORE)
+def _grade_py1(stdout, score):
+    return _grade_pre_graded_result(stdout, score, PY1_MAX_SCORE)
 
 def _grade_py0(flines, stdout):
 
@@ -176,10 +180,13 @@ def run_grade(assign_no, path_to_source, student_email, email_body):
         score_max = 10
 
     elif assign_no == 2:
+        score = 1
         S, P = _py2_get_vals(email_body)
+        score = score + 1
         username = re.findall("[a-zA-Z0-9]+@", student_email)[0][:-1]
+        source = None
         print(f"Username:{username}")
-        cmd = ['python', 'py2_sim.py', py2_values, username, S, P]
+        cmd = ['python', 'py2_sim.py', py2_values, username, str(S), str(P)]
         score_max = 10
 
     elif assign_no < 6:
@@ -190,17 +197,20 @@ def run_grade(assign_no, path_to_source, student_email, email_body):
 
     runtime, stdout, stderr = _run_time(cmd)
 
-    file = open(source, 'r')
-    flines = file.readlines()
-
     print("Standard Output:", stdout)
     print("Standard Error:", stderr)
 
-    feedback = [f"{source} contents:\n"]
-    for line in flines:
-        feedback.append(line)
+    if source is not None:
+        file = open(source, 'r')
+        flines = file.readlines()
 
-    feedback.append(f"{source} ran in {runtime:.3f} seconds\n\nProgram Output:\n")
+        feedback = [f"{source} contents:\n"]
+        for line in flines:
+            feedback.append(line)
+
+        feedback.append(f"{source} ran in {runtime:.3f} seconds\n\nProgram Output:\n")
+    else:
+        feedback = [f"Ran in {runtime:.3f} seconds\n\nProgram Output:\n"]
 
     for line in stdout:
         feedback.append(line + "\n")
@@ -209,21 +219,21 @@ def run_grade(assign_no, path_to_source, student_email, email_body):
     for line in stderr:
         feedback.append(line + "\n")
 
+    if source is not None:
+        score = score + 1# one point for getting this far
+        feedback.append("\nGrading:\nSubmitted valid .py file (+1)\n")
 
-    score = score + 1# one point for getting this far
-    feedback.append("\nGrading:\nSubmitted valid .py file (+1)\n")
-
-    if len(stderr) < 1:
-        score = score + 1
-        feedback.append(".py file runs without errors (+1)\n")
+        if len(stderr) < 1:
+            score = score + 1
+            feedback.append(".py file runs without errors (+1)\n")
 
     if assign_no == 0:
         assign_score, assign_feedback = _grade_py0(flines, stdout)
         score = score + assign_score
     elif assign_no == 1:
-        score, assign_feedback = _grade_py1(flines, stdout, score)
+        score, assign_feedback = _grade_py1(stdout, score)
     elif assign_no == 2:
-        score, assign_feedback = _grade_py2(flines, stdout, score)
+        score, assign_feedback = _grade_py2(stdout, 0) #set grade to 0 as workaround here
     elif assign_no < 6:
         raise UnimplementedAssignment
     else:
