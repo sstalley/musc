@@ -89,10 +89,10 @@ Out of 10 points:
  - 1 for correctly submitting an email
  - 1 for submitting an email where MUSC could find the SP number
  - up to 8 points for the performance of the hot rod:
-     - 8 points for 1st place
-		 - 7 points for 2nd place
-		 - 5 points for 3rd place
-		 - 0 points for last place
+   - 8 points for 1st place
+	 - 7 points for 2nd place
+	 - 5 points for 3rd place
+	 - 0 points for last place
 
 Note: Although performance for various tunings will vary between students, Race times and outcomes are directly comparable.
 
