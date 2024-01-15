@@ -5,7 +5,7 @@ import re
 import subprocess
 from account_info import gmail_imap, gmail_email, gmail_password, school_suffix
 from result_sender import send_result
-from runner_grader import run_grade, UnknownAssignment, TooManyFiles, test_dir, UnimplementedAssignment, ValuesNotFound
+from runner_grader import run_grade, UnknownAssignment, TooManyFiles, test_dir, UnimplementedAssignment, ValuesNotFound, NoSourceFile
 
 unimplemented_assign_str = \
 "I don't know how to grade this assignment yet.\n" + \
@@ -47,10 +47,6 @@ class NoAssignmentNumber(Exception):
 
 class NotSchoolAddress(Exception):
     "Raised when the email isn't from a school address"
-    pass
-
-class NoSourceFile(Exception):
-    "Raised when there isn't an attached source file"
     pass
 
 

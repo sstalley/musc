@@ -24,6 +24,10 @@ class ValuesNotFound(Exception):
     r"Could Not Find Student-specific Values"
     pass
 
+class NoSourceFile(Exception):
+    "Raised when there isn't an attached source file"
+    pass
+
 # Taken from https://stackabuse.com/python-validate-email-address-with-regular-expressions-regex/
 email_regex = re.compile(r'[ \t]*([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+[ \t]*')
 #TODO: refactor to just no whitespace version
