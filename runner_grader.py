@@ -39,15 +39,24 @@ py1_values_file = "py1_values.csv"
 PY2_MAX_SCORE = 10
 py2_values = "py2_values.csv"
 
-def _run_time(cmd):
+def _run_time(cmd, cmds=""):
     start_time = time.time()
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     timeout = threading.Timer(MAX_RUNTIME, proc.kill)
     try:
         timeout.start()
+        if len(cmds) > 0:
+            time.sleep(0.5) #give it half a sec to get ready
+            for command in cmds:
+                print(f"entering command {command}")
+                proc.stdin.write(f"{command}\r".encode("utf-8"))
+                time.sleep(0.1)
+
         stdout, stderr = proc.communicate()
-    except:
+    except Exception as e:
         print("something bad happened...")
+        print(e.message)
+        print(e.args)
     finally:
         timeout.cancel()
 
@@ -164,6 +173,7 @@ def _grade_py0(flines, stdout):
 def run_grade(assign_no, path_to_source, student_email, email_body):
 
     score = 0
+    cmds = "" # default: just run and grade, no interaction
 
     if assign_no == 0:
         if len(path_to_source) < 1:
@@ -176,12 +186,15 @@ def run_grade(assign_no, path_to_source, student_email, email_body):
     elif assign_no == 1:
         if len(path_to_source) < 1:
             raise NoSourceFile
-        if len(path_to_source) != 1:
+        if len(path_to_source) > 2:
             raise TooManyFiles
-        source = path_to_source[0]
-        r1, r2 = _py1_get_rs(student_email)
-        cmd = ['python', 'py1_tester.py', source, r1, r2]
-        score_max = 10
+        # TODO get commands to run (and run them)
+        #r1, r2 = _py1_get_rs(student_email)
+        # for now use the same one for everyone
+        source = None
+        cmds = "udcucucdudlcrlrcllcrrclx"
+        cmd = ['python', '../quest_adventure/quest_adventure.py']
+        score_max = 5
 
     elif assign_no == 2:
         score = 1
@@ -199,7 +212,7 @@ def run_grade(assign_no, path_to_source, student_email, email_body):
     else:
         raise UnknownAssignment
 
-    runtime, stdout, stderr = _run_time(cmd)
+    runtime, stdout, stderr = _run_time(cmd, cmds=cmds)
 
     print("Standard Output:", stdout)
     print("Standard Error:", stderr)

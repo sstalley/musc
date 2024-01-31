@@ -139,6 +139,9 @@ for n_msg in n_msgs[0].split():
 
         # download attachments to run
         path_to_source = download_attachments(message, file_dir="./test_dir")
+        # Kinda hacky - try to get npy files if no py files
+        if len(path_to_source) < 1:
+            path_to_source = download_attachments(message, filetype=".npy", file_dir="./test_dir")
 
         # grade the submission
         score, max_score, feedback = run_grade(assign_n, path_to_source, student_email, body)
@@ -151,6 +154,7 @@ for n_msg in n_msgs[0].split():
         try:
             if len(path_to_source) > 0:
                 cleanup_directory()
+                cleanup_directory(filetype=".npy")
         except:
             pass
 
