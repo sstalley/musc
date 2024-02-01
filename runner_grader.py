@@ -97,14 +97,14 @@ def _py2_get_vals(email_body):
 
     return s, p
 
-def _py1_get_rs(student_email):
+def _py1_get_commmands(student_email):
     with open( py1_values_file, 'r' ) as the_file:
         reader = csv.DictReader(the_file)
 
         for student in reader:
             print(f"comparing:{student['email'].lower()} and {student_email.lower()}")
             if student_email.lower().find(student['user'].lower()+"@") != -1:
-                return str(student['r1']), str(student['r2'])
+                return str(student['commands'])
 
     raise ValuesNotFound
 
@@ -254,7 +254,7 @@ def run_grade(assign_no, path_to_source, student_email, email_body):
 
         # for now use the same one for everyone
         source = None
-        cmds = "udcucucdudlcrlrcllcrrclx"
+        cmds = _py1_get_commmands(student_email)
         cmd = ['bash', './py1.sh']
         score_max = 5
 
