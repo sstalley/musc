@@ -2,7 +2,7 @@ import smtplib
 from account_info import gmail_smtp, gmail_smtp_port, gmail_email, gmail_password
 from email.mime.text import MIMEText
 
-VERSION = 'v0.0.2.1'
+VERSION = 'v0.0.2.2'
 YEAR = "2023-2024"
 
 tail_str = f"Mailable Unintelligent Student Grader (MUSC) {VERSION}\n" \
