@@ -148,11 +148,11 @@ def _grade_py1(stdout, score):
     for line in reversed(stdout):
         if re.search("STD_DEV", line) is not None:
             std_dev = int(re.search(r"-?\d+(?=\.)", line).group())
-            if 10 < std_dev < 10:
+            if -10 < std_dev < 10:
                 score = score + 1
-                feedback.append(f"{std_dev} is an even chill (+1)\n")
+                feedback.append(f"{std_dev} F is an even chill (+1)\n")
             else:
-                feedback.append(f"{std_dev} is not even chill (+0)\n")
+                feedback.append(f"{std_dev} F is not even chill (+0)\n")
 
             break
 
@@ -176,6 +176,8 @@ def _grade_py1(stdout, score):
     if place == len(places):
         score = score + 1
         feedback.append(f"Extra Credit: Journey Bonus (+1)\n")
+    elif place > 0:
+        feedback.append(f"Extra Credit: ??? {place}/{len(places)} (0)\n")
 
     return score, feedback
 
@@ -248,9 +250,6 @@ def run_grade(assign_no, path_to_source, student_email, email_body):
             raise NoSourceFile
         if len(path_to_source) > 2:
             raise TooManyFiles
-        # TODO get commands to run (and run them)
-        #r1, r2 = _py1_get_rs(student_email)
-
         copy_source()
 
         # for now use the same one for everyone
