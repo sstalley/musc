@@ -59,7 +59,7 @@ def _mark_as_read(n_msg):
 
 def cleanup_directory(filetype=".py", file_dir=test_dir):
     try:
-        subprocess.call(["rm",  os.path.join(file_dir, "*" + filetype)])
+        subprocess.call(["rm",  os.path.join(file_dir, "*" + filetype), "-f"])
     except FileNotFoundError:
         print("TODO SOS: fix this error")
         pass
@@ -83,7 +83,10 @@ def download_attachments(message, filetype=".py", file_dir=test_dir):
                continue
 
            print(f'fileName:{fileName}')
-           filePath = os.path.join(file_dir, "source.py")
+           if filetype==".py":
+               filePath = os.path.join(file_dir, "source.py")
+           else:
+               filePath = os.path.join(file_dir, fileName)
            print(f"Downloading {fileName} ...")
            fp = open(filePath, 'wb')
            fp.write(part.get_payload(decode=True))
@@ -139,8 +142,10 @@ for n_msg in n_msgs[0].split():
 
         # download attachments to run
         path_to_source = download_attachments(message, file_dir="./test_dir")
+        path_for_npy=False
         # Kinda hacky - try to get npy files if no py files
         if len(path_to_source) < 1:
+            path_for_npy=True
             path_to_source = download_attachments(message, filetype=".npy", file_dir="./test_dir")
 
         # grade the submission
@@ -153,8 +158,10 @@ for n_msg in n_msgs[0].split():
         # get rid of the evidence :P
         try:
             if len(path_to_source) > 0:
-                cleanup_directory()
-                cleanup_directory(filetype=".npy")
+                if path_for_npy:
+                    cleanup_directory(filetype=".npy")
+                else:
+                    cleanup_directory()
         except:
             pass
 

@@ -3,9 +3,11 @@ import threading
 import time
 import re
 import csv
+import os
 
 MAX_RUNTIME = 30
 test_dir = "./test_dir/"
+qa_dir = "../quest_adventure/"
 
 
 class UnimplementedAssignment(Exception):
@@ -33,11 +35,19 @@ email_regex = re.compile(r'[ \t]*([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(
 #TODO: refactor to just no whitespace version
 email_regex_nows = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
 
-PY1_MAX_SCORE = 10
+PY1_MAX_SCORE = 5
 py1_values_file = "py1_values.csv"
 
 PY2_MAX_SCORE = 10
 py2_values = "py2_values.csv"
+
+
+def copy_source(filetype=".py", source=qa_dir, dest=test_dir):
+    try:
+        subprocess.call(["cp",  os.path.join(qa_dir, "*" + filetype), dest, "-f"])
+    except FileNotFoundError:
+        print("TODO SOS: fix this error")
+        pass
 
 def _run_time(cmd, cmds=""):
     start_time = time.time()
@@ -119,7 +129,56 @@ def _grade_py2(stdout, score):
     return _grade_pre_graded_result(stdout, score, PY2_MAX_SCORE)
 
 def _grade_py1(stdout, score):
-    return _grade_pre_graded_result(stdout, score, PY1_MAX_SCORE)
+
+    feedback = []
+    # Grade Average Temp
+    for line in reversed(stdout):
+        if re.search("AVG_TEMP", line) is not None:
+            temp = int(re.search(r"-?\d+(?=\.)", line).group())
+            if temp < 0:
+                score = score + 1 # almost
+                feedback.append(f"{temp} below zero (+1)\n")
+            elif temp > 0:
+                feedback.append(f"{temp} above zero (+0)\n")
+            else:
+                score = score + 2 # on the dot
+                feedback.append(f"{temp} approximately zero! (+2)\n")
+            break
+
+    for line in reversed(stdout):
+        if re.search("STD_DEV", line) is not None:
+            std_dev = int(re.search(r"-?\d+(?=\.)", line).group())
+            if 10 < std_dev < 10:
+                score = score + 1
+                feedback.append(f"{std_dev} is an even chill (+1)\n")
+            else:
+                feedback.append(f"{std_dev} is not even chill (+0)\n")
+
+            break
+
+    edge_detected = False
+    for line in stdout:
+        if re.search("EDGE", line) is not None:
+            edge_detected=True
+
+    if edge_detected:
+        feedback.append(f"edge collision detected (+0)\n")
+    else:
+        feedback.append(f"no edge collisions detected (+1)\n")
+
+    places = ["Park", "Tunnel", "Suburb", "Ocean"]
+    place = 0
+    for line in stdout:
+        if place < len(places):
+            if re.search(places[place], line) is not None:
+                place =+ 1
+
+    if place == len(places):
+        score = score + 1
+        feedback.append(f"Extra Credit: Journey Bonus (+1)\n")
+
+    return score, feedback
+
 
 def _grade_py0(flines, stdout):
 
@@ -184,16 +243,20 @@ def run_grade(assign_no, path_to_source, student_email, email_body):
         cmd = ['python', source]
         score_max = 5
     elif assign_no == 1:
+        score = 1
         if len(path_to_source) < 1:
             raise NoSourceFile
         if len(path_to_source) > 2:
             raise TooManyFiles
         # TODO get commands to run (and run them)
         #r1, r2 = _py1_get_rs(student_email)
+
+        copy_source()
+
         # for now use the same one for everyone
         source = None
         cmds = "udcucucdudlcrlrcllcrrclx"
-        cmd = ['python', '../quest_adventure/quest_adventure.py']
+        cmd = ['bash', './py1.sh']
         score_max = 5
 
     elif assign_no == 2:
