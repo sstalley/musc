@@ -59,7 +59,7 @@ def _run_time(cmd, cmds=""):
             time.sleep(0.5*5) #give the raspberry pi more time to load up
             for command in cmds:
                 print(f"entering command {command}")
-                proc.stdin.write(f"{command}\r".encode("utf-8"))
+                proc.stdin.write(f"{command}\r\n".encode("utf-8"))
                 time.sleep(0.1*5) # give raspberry more time to think about stuff
 
         stdout, stderr = proc.communicate()
