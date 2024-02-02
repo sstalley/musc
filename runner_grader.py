@@ -56,11 +56,11 @@ def _run_time(cmd, cmds=""):
     try:
         timeout.start()
         if len(cmds) > 0:
-            time.sleep(0.5) #give it half a sec to get ready
+            time.sleep(0.5*5) #give the raspberry pi more time to load up
             for command in cmds:
                 print(f"entering command {command}")
                 proc.stdin.write(f"{command}\r".encode("utf-8"))
-                time.sleep(0.1)
+                time.sleep(0.1*5) # give raspberry more time to think about stuff
 
         stdout, stderr = proc.communicate()
     except Exception as e:
